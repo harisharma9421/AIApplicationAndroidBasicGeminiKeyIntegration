@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "108547493795",
+    "project_id": "ailanguagetranslator",
+    "storage_bucket": "ailanguagetranslator.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108547493795:android:d4fdf6c431ded05ae81416",
+        "android_client_info": {
+          "package_name": "com.MIT.harisharma"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFShtOATXeKmXwVVG1Zhl2yeDLK-oryf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
