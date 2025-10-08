@@ -17,6 +17,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.GoogleAuthProvider;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,9 +35,13 @@ public class SignupActivity extends AppCompatActivity {
     private MaterialButton btnSignup;
     private TextView tvLogin;
     private ProgressBar progressBar;
+    private com.google.android.gms.common.SignInButton btnGoogleSignUp;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private GoogleSignInClient googleSignInClient;
+
+    private static final int RC_GOOGLE_SIGN_UP = 2001;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +53,7 @@ public class SignupActivity extends AppCompatActivity {
 
         initViews();
         setupGenderSpinner();
+        initGoogleSignIn();
         setupClickListeners();
     }
 
@@ -54,6 +68,7 @@ public class SignupActivity extends AppCompatActivity {
         btnSignup = findViewById(R.id.btnSignup);
         tvLogin = findViewById(R.id.tvLogin);
         progressBar = findViewById(R.id.progressBar);
+        btnGoogleSignUp = findViewById(R.id.btnGoogleSignUp);
     }
 
     private void setupGenderSpinner() {
@@ -70,6 +85,77 @@ public class SignupActivity extends AppCompatActivity {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
+        btnGoogleSignUp.setOnClickListener(v -> startGoogleSignUp());
+    }
+
+    private void initGoogleSignIn() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    private void startGoogleSignUp() {
+        showLoading(true);
+        // Force the Google account chooser to appear by clearing any cached account
+        googleSignInClient.signOut().addOnCompleteListener(task -> {
+            Intent intent = googleSignInClient.getSignInIntent();
+            startActivityForResult(intent, RC_GOOGLE_SIGN_UP);
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_GOOGLE_SIGN_UP) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account.getIdToken(), account);
+            } catch (ApiException e) {
+                showLoading(false);
+                showSnackbar("Google sign in failed: " + e.getMessage());
+            }
+        }
+    }
+
+    private void firebaseAuthWithGoogle(String idToken, GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            // Ensure user document exists; create minimal record if missing
+                            Map<String, Object> userDoc = new HashMap<>();
+                            userDoc.put("userId", user.getUid());
+                            userDoc.put("firstName", acct.getGivenName() != null ? acct.getGivenName() : "");
+                            userDoc.put("lastName", acct.getFamilyName() != null ? acct.getFamilyName() : "");
+                            userDoc.put("email", user.getEmail());
+                            userDoc.put("phoneNumber", "");
+                            userDoc.put("gender", "");
+
+                            db.collection("users").document(user.getUid())
+                                    .set(userDoc)
+                                    .addOnSuccessListener(aVoid -> {
+                                        showLoading(false);
+                                        startActivity(new Intent(this, MainActivity.class));
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        showLoading(false);
+                                        showSnackbar("Failed to save user data");
+                                    });
+                        } else {
+                            showLoading(false);
+                            showSnackbar("Authentication succeeded, but user is null");
+                        }
+                    } else {
+                        showLoading(false);
+                        showSnackbar("Authentication Failed: " + (task.getException() != null ? task.getException().getMessage() : "Unknown error"));
+                    }
+                });
     }
 
     private void validateAndSignup() {

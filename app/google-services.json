@@ -12,7 +12,20 @@
           "package_name": "com.MIT.harisharma"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "108547493795-8ihg2tj6rmsabb63n5l4um17i8uejm6b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.MIT.harisharma",
+            "certificate_hash": "ed46fcf11596eeac93f2186bb4756f7e4feebf49"
+          }
+        },
+        {
+          "client_id": "108547493795-7bvbr2mo2kq5iimku95rp0naa456tn8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCFShtOATXeKmXwVVG1Zhl2yeDLK-oryf8"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "108547493795-7bvbr2mo2kq5iimku95rp0naa456tn8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

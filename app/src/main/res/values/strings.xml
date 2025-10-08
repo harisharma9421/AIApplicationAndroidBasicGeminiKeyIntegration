@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AIAssistant</string>
+    <!-- Replace this with the real Web client ID from Firebase (OAuth 2.0 client ID) -->
+    <string name="default_web_client_id">108547493795-7bvbr2mo2kq5iimku95rp0naa456tn8g.apps.googleusercontent.com</string>
 </resources>

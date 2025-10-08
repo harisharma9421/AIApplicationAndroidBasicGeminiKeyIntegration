@@ -108,6 +108,13 @@
                 app:backgroundTint="@color/primary"
                 android:layout_marginBottom="16dp" />
 
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/btnGoogleSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="visible" />
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"

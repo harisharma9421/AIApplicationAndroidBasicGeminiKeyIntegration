@@ -76,8 +76,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-analytics")
 
-    // 📱 Phone Authentication (for OTP-based password reset)
+    // 📱 Phone Authentication (for OTP-based password reset) and Google Sign-In
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
     // 🌐 Retrofit + JSON Converter (for OpenAI API integration)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
